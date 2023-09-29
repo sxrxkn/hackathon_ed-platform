@@ -1,0 +1,55 @@
+# docker-compose --file docker-compose.dev.yml up
+
+version: '3.9'
+
+services:
+  backendapp:
+      build:
+        context: ./backend
+        dockerfile: Dockerfile.dev
+      ports:
+        - "8080:8080"
+      volumes:
+        - ${PWD}/backend:/backendapp
+        - ${PWD}/backend/node_modules
+      environment:
+        NODE_ENV: development
+        PORT_ENV: 8080
+      networks:
+        - backendapp_net
+
+  frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile.dev
+      ports:
+        - "3000:3000"
+      volumes:
+        - ${PWD}/frontend/src:/app/src
+        - ${PWD}/frontend/public:/app/public
+      environment:
+        CHOKIDAR_USEPOLLING: 'true'
+      networks:
+        - backendapp_net
+
+networks:
+  backendapp_net:
+
+
+
+  # db:
+  #   image: postgres:15.2-alpine
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #   volumes:
+  #     - db_data:/var/lib/postgresql/data
+  #   ports:
+  #     - 5432:5432
+  #   networks:
+  #     - backendapp_net
+
+# volumes:
+#   db_data:
